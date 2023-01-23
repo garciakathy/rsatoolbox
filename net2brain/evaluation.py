@@ -237,7 +237,7 @@ class Evaluation():
             return frame
 
         df_data = prettyToFrame(table)
-        if len(df_data) > 2:
+        if len(df_data) > 4:
             df_data.to_csv("output.csv")
         else:
             df_data.to_csv("best_output.csv")
