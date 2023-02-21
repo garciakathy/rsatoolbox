@@ -54,7 +54,7 @@ class RDM():
         """
 
         activations = glob.glob(self.feat_dir + "/*" + ".npz")
-        activations.sort()
+        sorted_names = sorted(names, key=str.casefold)
         feat = np.load(activations[i], allow_pickle=True)[layer_id]
 
         return feat.ravel()
