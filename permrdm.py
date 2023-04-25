@@ -15,6 +15,7 @@ mt_corr = []
 rois = ['evc', 'ppa', 'ffa', 'loc', 'face', 'eba', 'psts', 'asts', 'mt']
 subjects = range(1,5)
 shuffle = 0
+perm = [x for x in range(0,200)]
 
 #model layers
 layer1 = np.load('isiktoolbox/data/rdms/AlexNet/features.0.npz')['arr_0']
@@ -28,22 +29,21 @@ layer_lower3 = layer3[np.tril_indices_from(layer3, k=-1)]
 layer_lower4 = layer4[np.tril_indices_from(layer4, k=-1)]
 layer_lower5 = layer5[np.tril_indices_from(layer5, k=-1)]
 
-
-for roi in rois:
-  for sub in subjects:
-    shuffle = 0
-    for i in range(0, 5001):
+for i in range(0, 5001):
+  for roi in rois:
+    for sub in subjects:
       sub = str(sub)
       # Loading Betas
       betas = np.load("isiktoolbox/data/RoiSubjectBetas/"+roi+"_betas_"+str(sub)+".npz")['arr_0']
 
       # Correlating pairwise across 200 videos
       df_beta = pd.DataFrame(betas)
-      df_pearson = 1 - df_beta.corr(method='pearson')
-      sub_rdm = df_pearson.to_numpy()
       # Shuffle the videos
       if shuffle != 0:
-        np.random.shuffle(sub_rdm)
+        np.random.shuffle(perm)
+        df_beta = df_beta[perm]
+      df_pearson = 1 - df_beta.corr(method='pearson')
+      sub_rdm = df_pearson.to_numpy()
 
       # RSA
       lower = sub_rdm[np.tril_indices_from(sub_rdm, k=-1)]
@@ -73,34 +73,34 @@ for roi in rois:
       elif roi == 'mt':
         mt_corr.append([r1,r2,r3,r4,r5])
 
-      print(str(shuffle) + " / 5000 Done")
-      shuffle += 1
+  print(str(shuffle) + " / 5000 Done")
+  shuffle += 1
 
 # Save RDM's as zipped numpy arrays locally
 brain_rdms_arr = np.array(evc_corr)
-np.savez("isiktoolbox/data/shuffledSpearman/evc_correlations_rdm.npz", brain_rdms_arr)
+np.savez("isiktoolbox/data/shuffledSpearman/evc_correlations_rdm_final.npz", brain_rdms_arr)
 
 brain_rdms_arr = np.array(ffa_corr)
-np.savez("isiktoolbox/data/shuffledSpearman/ffa_correlations_rdm.npz", brain_rdms_arr)
+np.savez("isiktoolbox/data/shuffledSpearman/ffa_correlations_rdm_final.npz", brain_rdms_arr)
 
 brain_rdms_arr = np.array(ppa_corr)
-np.savez("isiktoolbox/data/shuffledSpearman/ppa_correlations_rdm.npz", brain_rdms_arr)
+np.savez("isiktoolbox/data/shuffledSpearman/ppa_correlations_rdm_final.npz", brain_rdms_arr)
 
 brain_rdms_arr = np.array(loc_corr)
-np.savez("isiktoolbox/data/shuffledSpearman/loc_correlations_rdm.npz", brain_rdms_arr)
+np.savez("isiktoolbox/data/shuffledSpearman/loc_correlations_rdm_final.npz", brain_rdms_arr)
 
 brain_rdms_arr = np.array(sts_corr)
-np.savez("isiktoolbox/data/shuffledSpearman/sts_correlations_rdm.npz", brain_rdms_arr)
+np.savez("isiktoolbox/data/shuffledSpearman/sts_correlations_rdm_final.npz", brain_rdms_arr)
 
 brain_rdms_arr = np.array(eba_corr)
-np.savez("isiktoolbox/data/shuffledSpearman/eba_correlations_rdm.npz", brain_rdms_arr)
+np.savez("isiktoolbox/data/shuffledSpearman/eba_correlations_rdm_final.npz", brain_rdms_arr)
 
 brain_rdms_arr = np.array(psts_corr)
-np.savez("isiktoolbox/data/shuffledSpearman/psts_correlations_rdm.npz", brain_rdms_arr)
+np.savez("isiktoolbox/data/shuffledSpearman/psts_correlations_rdm_final.npz", brain_rdms_arr)
 
 brain_rdms_arr = np.array(asts_corr)
-np.savez("isiktoolbox/data/shuffledSpearman/asts_correlations_rdm.npz", brain_rdms_arr)
+np.savez("isiktoolbox/data/shuffledSpearman/asts_correlations_rdm_final.npz", brain_rdms_arr)
 
 brain_rdms_arr = np.array(mt_corr)
-np.savez("isiktoolbox/data/shuffledSpearman/mt_correlations_rdm.npz", brain_rdms_arr)
+np.savez("isiktoolbox/data/shuffledSpearman/mt_correlations_rdm_final.npz", brain_rdms_arr)
 print('Finished all RDMs')
